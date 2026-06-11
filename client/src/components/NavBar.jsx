@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { User, LogOut, Menu } from "lucide-react";
+import { User, LogOut, Menu, Zap } from "lucide-react";
 import { useState } from "react";
+import AIWidget from "./AIWidget";
 
 export default function NavBar() {
   const token = localStorage.getItem("token");
@@ -28,6 +29,13 @@ export default function NavBar() {
 
         {/* Desktop Navigation */}
         <nav className="hidden sm:flex items-center gap-3 text-sm text-slate-600">
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent('open-ai'))}
+            title="Open Assistant"
+            className="rounded-full p-2 bg-white/10 hover:bg-white/20 text-white"
+          >
+            <Zap className="h-4 w-4" />
+          </button>
           {!token ? (
             <>
               <NavLink
@@ -105,6 +113,8 @@ export default function NavBar() {
           <Menu className="h-6 w-6" />
         </button>
       </div>
+
+      <AIWidget />
 
       {/* Mobile Menu */}
       {isOpen && (

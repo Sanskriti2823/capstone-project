@@ -1,5 +1,6 @@
 import { Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Zap } from "lucide-react";
 
 export default function Services() {
   const navigate = useNavigate();
@@ -75,6 +76,18 @@ export default function Services() {
       <section className="px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-8 md:grid-cols-3">
+            <div className="group rounded-3xl card-glass p-8 flex flex-col justify-between">
+              <div>
+                <div className="text-6xl mb-4">✨</div>
+                <h2 className="text-2xl font-bold text-white">AI Photo Enhance</h2>
+                <p className="mt-2 text-slate-400">Quickly enhance and stylize images using AI-powered tools (demo).</p>
+              </div>
+              <div className="mt-6 flex gap-2">
+                <button onClick={() => window.dispatchEvent(new CustomEvent('open-ai'))} className="btn-gradient w-full flex items-center justify-center gap-2">
+                  <Zap className="h-4 w-4" /> Open Assistant
+                </button>
+              </div>
+            </div>
             {services.map((service) => (
               <div
                 key={service.id}
