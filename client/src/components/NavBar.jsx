@@ -3,6 +3,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 export default function NavBar() {
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
+  const name = localStorage.getItem("name");
   const navigate = useNavigate();
 
   const logout = () => {
@@ -11,15 +12,18 @@ export default function NavBar() {
   };
 
   return (
-    <header className="border-b border-slate-200 bg-white/90 backdrop-blur-xl">
+    <header className="border-b border-slate-200 bg-white/95 backdrop-blur-xl shadow-sm">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-        <div>
+        <div className="space-y-1">
           <NavLink to="/" className="text-xl font-semibold text-slate-900">
             StudioPro
           </NavLink>
+          {token && (
+            <p className="text-xs text-slate-500">Hello, {name || "Studio Manager"}</p>
+          )}
         </div>
 
-        <nav className="flex items-center gap-4 text-sm text-slate-600">
+        <nav className="flex items-center gap-3 text-sm text-slate-600">
           {token ? (
             <>
               <NavLink

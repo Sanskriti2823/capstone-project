@@ -2,13 +2,20 @@ const mongoose = require("mongoose");
 const { MongoMemoryServer } = require("mongodb-memory-server");
 
 const isPlaceholderUri = (uri) => {
-  return (
-    !uri ||
-    uri.includes("your_mongodb_url") ||
-    uri.includes("username") ||
-    uri.includes("password") ||
-    uri.includes("cluster0.mongodb.net")
-  );
+  if (!uri) return true;
+
+  const placeholderPatterns = [
+    "your_mongodb_url",
+    "<db_password>",
+    "<password>",
+    "<username>",
+    "your_username",
+    "your_password",
+    "username",
+    "password",
+  ];
+
+  return placeholderPatterns.some((pattern) => uri.includes(pattern));
 };
 
 const connectDB = async () => {

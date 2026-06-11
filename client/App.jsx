@@ -3,6 +3,8 @@ import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Admin from "./pages/Admin.jsx";
+import Success from "./pages/Success.jsx";
+import Cancel from "./pages/Cancel.jsx";
 import NavBar from "./src/components/NavBar.jsx";
 
 function App() {
@@ -18,6 +20,8 @@ function App() {
           <Route path="/register" element={token ? <Navigate to="/dashboard" /> : <Register />} />
           <Route path="/dashboard" element={token ? <Dashboard /> : <Navigate to="/" />} />
           <Route path="/admin" element={token && role === "admin" ? <Admin /> : <Navigate to="/" />} />
+          <Route path="/success" element={<Success />} />
+          <Route path="/cancel" element={<Cancel />} />
         </Routes>
       </div>
     </BrowserRouter>

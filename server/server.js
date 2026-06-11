@@ -1,12 +1,79 @@
+require("dotenv").config();
+
 const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const cloudinary = require("cloudinary").v2;
-require("dotenv").config();
 
 const connectDB = require("./config/db");
 
 const app = express();
+
+const placeholderEnvPatterns = [
+  "<db_password>",
+  "<password>",
+  "<username>",
+  "your_",
+  "change_this",
+];
+
+const isPlaceholderValue = (value) => {
+  if (!value) return true;
+  return placeholderEnvPatterns.some((pattern) => value.includes(pattern));
+};
+
+const validateEnv = () => {
+  const requiredEnv = ["JWT_SECRET", "ADMIN_KEY", "CLIENT_URL"];
+  const productionOnlyEnv = [
+    "MONGO_URI",
+    "STRIPE_SECRET_KEY",
+    "STRIPE_WEBHOOK_SECRET",
+    "CLOUDINARY_CLOUD_NAME",
+    "CLOUDINARY_API_KEY",
+    "CLOUDINARY_API_SECRET",
+  ];
+
+  const errors = [];
+  const warnings = [];
+
+  requiredEnv.forEach((key) => {
+    const value = process.env[key];
+    if (!value) {
+      errors.push(`${key} is not set`);
+    } else if (isPlaceholderValue(value)) {
+      warnings.push(`${key} is still using a placeholder value`);
+    }
+  });
+
+  if (process.env.NODE_ENV === "production") {
+    productionOnlyEnv.forEach((key) => {
+      const value = process.env[key];
+      if (!value) {
+        errors.push(`${key} is not set`);
+      } else if (isPlaceholderValue(value)) {
+        errors.push(`${key} is still using a placeholder value`);
+      }
+    });
+  } else {
+    productionOnlyEnv.forEach((key) => {
+      const value = process.env[key];
+      if (value && isPlaceholderValue(value)) {
+        warnings.push(`${key} is still using a placeholder value`);
+      }
+    });
+  }
+
+  if (warnings.length > 0) {
+    console.warn("Environment warnings:\n" + warnings.join("\n"));
+  }
+
+  if (errors.length > 0) {
+    console.error("Environment validation failed:\n" + errors.join("\n"));
+    process.exit(1);
+  }
+};
+
+validateEnv();
 connectDB();
 
 cloudinary.config({

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import API from "../services/api.js";
 
 const serviceOptions = [
@@ -11,8 +11,11 @@ export default function Dashboard() {
   const [bookings, setBookings] = useState([]);
   const [form, setForm] = useState({ service: "Wedding Shoot", date: "", price: 499 });
   const [image, setImage] = useState(null);
+  const [preview, setPreview] = useState(null);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [editingBooking, setEditingBooking] = useState(null);
+  const [editForm, setEditForm] = useState({ service: "Wedding Shoot", date: "", price: 499 });
   const role = localStorage.getItem("role");
   const name = localStorage.getItem("name");
 
@@ -48,6 +51,44 @@ export default function Dashboard() {
     }
   };
 
+  const startEdit = (booking) => {
+    setEditingBooking(booking);
+    setEditForm({ service: booking.service, date: booking.date, price: booking.price || 499 });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const cancelEdit = () => {
+    setEditingBooking(null);
+    setEditForm({ service: "Wedding Shoot", date: "", price: 499 });
+  };
+
+  const updateBooking = async () => {
+    if (!editingBooking) return;
+    setLoading(true);
+    try {
+      await API.put(`/bookings/${editingBooking._id}`, editForm);
+      setMessage("Booking updated successfully.");
+      cancelEdit();
+      fetchBookings();
+    } catch (err) {
+      setMessage(err.response?.data || "Unable to update booking");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this booking permanently?")) return;
+    try {
+      await API.delete(`/bookings/${id}`);
+      setMessage("Booking deleted successfully.");
+      if (editingBooking?._id === id) cancelEdit();
+      fetchBookings();
+    } catch (err) {
+      setMessage(err.response?.data || "Unable to delete booking");
+    }
+  };
+
   const handlePay = async (booking) => {
     try {
       const res = await API.post("/payments/create-session", { bookingId: booking._id });
@@ -61,20 +102,52 @@ export default function Dashboard() {
     fetchBookings();
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (preview) URL.revokeObjectURL(preview);
+    };
+  }, [preview]);
+
+  const summary = {
+    total: bookings.length,
+    paid: bookings.filter((booking) => booking.paymentStatus === "paid").length,
+    pending: bookings.filter((booking) => booking.paymentStatus !== "paid").length,
+    upcoming: bookings.filter((booking) => booking.date && new Date(booking.date) >= new Date()).length,
+  };
+
   return (
     <div className="container mx-auto px-4 py-6">
-      <div className="mb-6 rounded-3xl bg-white p-6 shadow-xl ring-1 ring-slate-200">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="mb-6 rounded-3xl bg-gradient-to-r from-sky-600 via-slate-900 to-slate-700 p-8 shadow-2xl text-white ring-1 ring-slate-800">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-sky-600">Welcome back</p>
-            <h1 className="mt-2 text-3xl font-semibold text-slate-900">{name || "Studio Manager"}</h1>
-            <p className="mt-2 text-slate-600">Manage bookings, upload photos, and accept payments from one place.</p>
+            <p className="text-sm uppercase tracking-[0.35em] text-sky-200/80">Welcome back</p>
+            <h1 className="mt-2 text-4xl font-semibold">{name || "Studio Manager"}</h1>
+            <p className="mt-3 max-w-2xl text-slate-100/90">Manage bookings, update schedules, and keep your client workflow smooth with the enhanced dashboard.</p>
           </div>
           {role === "admin" && (
-            <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-700 ring-1 ring-slate-200">
+            <div className="rounded-3xl bg-white/10 px-5 py-4 text-sm text-slate-100 ring-1 ring-white/20">
               Admin mode enabled
             </div>
           )}
+        </div>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 mb-6">
+        <div className="rounded-3xl bg-white p-5 shadow-lg ring-1 ring-slate-200">
+          <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Total bookings</p>
+          <p className="mt-4 text-3xl font-semibold text-slate-900">{summary.total}</p>
+        </div>
+        <div className="rounded-3xl bg-slate-900 p-5 shadow-lg ring-1 ring-slate-800 text-white">
+          <p className="text-sm uppercase tracking-[0.3em] text-slate-300">Paid</p>
+          <p className="mt-4 text-3xl font-semibold">{summary.paid}</p>
+        </div>
+        <div className="rounded-3xl bg-white p-5 shadow-lg ring-1 ring-slate-200">
+          <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Pending payments</p>
+          <p className="mt-4 text-3xl font-semibold text-slate-900">{summary.pending}</p>
+        </div>
+        <div className="rounded-3xl bg-white p-5 shadow-lg ring-1 ring-slate-200">
+          <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Upcoming</p>
+          <p className="mt-4 text-3xl font-semibold text-slate-900">{summary.upcoming}</p>
         </div>
       </div>
 
@@ -82,17 +155,31 @@ export default function Dashboard() {
 
       <div className="grid gap-6 lg:grid-cols-[420px_minmax(0,1fr)]">
         <section className="rounded-3xl bg-white p-6 shadow-xl ring-1 ring-slate-200">
-          <h2 className="text-2xl font-semibold text-slate-900">Create a new booking</h2>
-          <p className="mt-2 text-slate-600">Select a package, choose a date, and optionally attach an image.</p>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h2 className="text-2xl font-semibold text-slate-900">{editingBooking ? "Edit booking" : "Create a new booking"}</h2>
+              <p className="mt-2 text-slate-600">{editingBooking ? "Adjust the booking details and save changes." : "Select a service, choose a date, and optionally attach an image."}</p>
+            </div>
+            {editingBooking && (
+              <button
+                onClick={cancelEdit}
+                className="rounded-2xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-200"
+              >
+                Cancel edit
+              </button>
+            )}
+          </div>
 
           <div className="mt-6 space-y-4">
             <label className="block">
               <span className="text-sm font-medium text-slate-700">Service</span>
               <select
-                value={form.service}
+                value={editingBooking ? editForm.service : form.service}
                 onChange={(e) => {
                   const selected = serviceOptions.find((option) => option.label === e.target.value);
-                  setForm({ ...form, service: e.target.value, price: selected?.price || form.price });
+                  const setter = editingBooking ? setEditForm : setForm;
+                  const state = editingBooking ? editForm : form;
+                  setter({ ...state, service: e.target.value, price: selected?.price || state.price });
                 }}
                 className="mt-1 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-sky-500"
               >
@@ -108,8 +195,12 @@ export default function Dashboard() {
               <span className="text-sm font-medium text-slate-700">Date</span>
               <input
                 type="date"
-                value={form.date}
-                onChange={(e) => setForm({ ...form, date: e.target.value })}
+                value={editingBooking ? editForm.date : form.date}
+                onChange={(e) => {
+                  const setter = editingBooking ? setEditForm : setForm;
+                  const state = editingBooking ? editForm : form;
+                  setter({ ...state, date: e.target.value });
+                }}
                 className="mt-1 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition focus:border-sky-500"
               />
             </label>
@@ -119,22 +210,33 @@ export default function Dashboard() {
               <input
                 type="file"
                 accept="image/*"
-                onChange={(e) => setImage(e.target.files?.[0] || null)}
+                onChange={(e) => {
+                  const file = e.target.files?.[0] || null;
+                  setImage(file);
+                  setPreview(file ? URL.createObjectURL(file) : null);
+                }}
                 className="mt-1 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none"
               />
             </label>
 
+            {preview && (
+              <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                <p className="mb-2 text-sm font-medium text-slate-700">Image preview</p>
+                <img src={preview} alt="Preview" className="h-48 w-full rounded-3xl object-cover" />
+              </div>
+            )}
+
             <div className="flex items-center justify-between gap-3">
               <span className="text-sm font-medium text-slate-700">Price</span>
-              <strong className="text-lg text-slate-900">${form.price}</strong>
+              <strong className="text-lg text-slate-900">${editingBooking ? editForm.price : form.price}</strong>
             </div>
 
             <button
-              onClick={handleBooking}
+              onClick={editingBooking ? updateBooking : handleBooking}
               disabled={loading}
               className="w-full rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:bg-slate-400"
             >
-              {loading ? "Saving booking..." : "Create Booking"}
+              {editingBooking ? "Save changes" : loading ? "Saving booking..." : "Create Booking"}
             </button>
           </div>
         </section>
@@ -184,6 +286,18 @@ export default function Dashboard() {
                         Pay Now
                       </button>
                     )}
+                    <button
+                      onClick={() => startEdit(booking)}
+                      className="rounded-2xl bg-sky-100 px-4 py-2 text-sm font-semibold text-sky-700 transition hover:bg-sky-200"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(booking._id)}
+                      className="rounded-2xl bg-rose-100 px-4 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-200"
+                    >
+                      Delete
+                    </button>
                     <span className="text-sm text-slate-500">Booking ID: {booking._id}</span>
                   </div>
                 </div>
