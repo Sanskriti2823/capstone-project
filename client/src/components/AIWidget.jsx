@@ -26,22 +26,27 @@ export default function AIWidget() {
     setInput("");
     setMessages((m) => [...m, { from: "bot", text: "Thinking..." }]);
 
-    // Try a server AI endpoint; fall back to a quick mock reply
+    // Call the server AI endpoint and display its answer.
     try {
-      const res = await fetch("/api/ai", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ prompt: text }) });
+      const res = await fetch("/api/ai/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: text }),
+      });
+
       if (res.ok) {
         const data = await res.json();
         setMessages((m) => [...m.slice(0, -1), { from: "bot", text: data.answer || JSON.stringify(data) }]);
         return;
       }
-    } catch (e) {
-      // ignore and use mock
-    }
 
-    // Simple mock reply
-    setTimeout(() => {
-      setMessages((m) => [...m.slice(0, -1), { from: "bot", text: `I can help with that. Quick tip: try offering a 10% weekday discount for bookings. (You asked: "${text}")` }]);
-    }, 700);
+      const errorData = await res.json();
+      setMessages((m) => [...m.slice(0, -1), { from: "bot", text: errorData.error || "AI service returned an error." }]);
+      return;
+    } catch (e) {
+      setMessages((m) => [...m.slice(0, -1), { from: "bot", text: "Unable to reach AI service. Please try again later." }]);
+      return;
+    }
   };
 
   if (!open) return null;

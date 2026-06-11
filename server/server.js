@@ -87,6 +87,7 @@ app.use(express.json());
 app.use("/api/payments/webhook", express.raw({ type: "application/json" }));
 
 app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/ai", require("./routes/aiRoutes"));
 app.use("/api/bookings", require("./routes/bookingRoutes"));
 app.use("/api/uploads", require("./routes/imageRoutes"));
 app.use("/api/payments", require("./routes/paymentRoutes"));
