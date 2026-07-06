@@ -1,21 +1,27 @@
-const { Configuration, OpenAIApi } = require("openai");
+const OpenAI = require("openai");
 
 const openAiKey = process.env.OPENAI_API_KEY;
-const configuration = new Configuration({ apiKey: openAiKey });
-const openai = new OpenAIApi(configuration);
+
+const getOpenAI = () => {
+  if (!openAiKey) return null;
+  return new OpenAI({ apiKey: openAiKey });
+};
 
 exports.chat = async (req, res) => {
-  if (!openAiKey) {
-    return res.status(500).json({ error: "OpenAI API key is not configured." });
-  }
-
   const { prompt } = req.body;
   if (!prompt || typeof prompt !== "string") {
     return res.status(400).json({ error: "Prompt is required." });
   }
 
+  const openai = getOpenAI();
+  if (!openai) {
+    return res.json({
+      answer: "OpenAI is not configured on this server yet, but here is a quick studio tip: offer a bundled discount for weekday bookings and include a free mini-session to increase conversions.",
+    });
+  }
+
   try {
-    const response = await openai.createChatCompletion({
+    const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
         {
@@ -28,7 +34,7 @@ exports.chat = async (req, res) => {
       temperature: 0.8,
     });
 
-    const answer = response.data.choices?.[0]?.message?.content?.trim();
+    const answer = response?.choices?.[0]?.message?.content?.trim();
     if (!answer) {
       return res.status(500).json({ error: "AI did not return an answer." });
     }

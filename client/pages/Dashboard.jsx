@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { TrendingUp, DollarSign, Calendar, CheckCircle2, Clock, AlertCircle } from "lucide-react";
 import API from "../services/api.js";
 
 const serviceOptions = [
@@ -125,29 +126,49 @@ export default function Dashboard() {
             <p className="mt-3 max-w-2xl text-slate-100/90">Manage bookings, update schedules, and keep your client workflow smooth with the enhanced dashboard.</p>
           </div>
           {role === "admin" && (
-            <div className="rounded-3xl bg-white/10 px-5 py-4 text-sm text-slate-100 ring-1 ring-white/20">
-              Admin mode enabled
+            <div className="rounded-3xl bg-white/10 px-5 py-4 text-sm text-slate-100 ring-1 ring-white/20 font-semibold">
+              👨‍💼 Admin Dashboard
             </div>
           )}
         </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 mb-6">
-        <div className="rounded-3xl bg-white p-5 shadow-lg ring-1 ring-slate-200">
-          <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Total bookings</p>
-          <p className="mt-4 text-3xl font-semibold text-slate-900">{summary.total}</p>
+        <div className="rounded-2xl bg-gradient-to-br from-sky-50 to-sky-100 p-6 shadow-lg ring-1 ring-sky-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-sky-600">Total Bookings</p>
+              <p className="mt-2 text-3xl font-bold text-sky-900">{summary.total}</p>
+            </div>
+            <div className="p-3 bg-sky-200 rounded-lg"><Calendar className="text-sky-600" size={24} /></div>
+          </div>
         </div>
-        <div className="rounded-3xl bg-slate-900 p-5 shadow-lg ring-1 ring-slate-800 text-white">
-          <p className="text-sm uppercase tracking-[0.3em] text-slate-300">Paid</p>
-          <p className="mt-4 text-3xl font-semibold">{summary.paid}</p>
+        <div className="rounded-2xl bg-gradient-to-br from-emerald-50 to-emerald-100 p-6 shadow-lg ring-1 ring-emerald-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-emerald-600">Paid</p>
+              <p className="mt-2 text-3xl font-bold text-emerald-900">{summary.paid}</p>
+            </div>
+            <div className="p-3 bg-emerald-200 rounded-lg"><CheckCircle2 className="text-emerald-600" size={24} /></div>
+          </div>
         </div>
-        <div className="rounded-3xl bg-white p-5 shadow-lg ring-1 ring-slate-200">
-          <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Pending payments</p>
-          <p className="mt-4 text-3xl font-semibold text-slate-900">{summary.pending}</p>
+        <div className="rounded-2xl bg-gradient-to-br from-amber-50 to-amber-100 p-6 shadow-lg ring-1 ring-amber-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-amber-600">Pending</p>
+              <p className="mt-2 text-3xl font-bold text-amber-900">{summary.pending}</p>
+            </div>
+            <div className="p-3 bg-amber-200 rounded-lg"><Clock className="text-amber-600" size={24} /></div>
+          </div>
         </div>
-        <div className="rounded-3xl bg-white p-5 shadow-lg ring-1 ring-slate-200">
-          <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Upcoming</p>
-          <p className="mt-4 text-3xl font-semibold text-slate-900">{summary.upcoming}</p>
+        <div className="rounded-2xl bg-gradient-to-br from-violet-50 to-violet-100 p-6 shadow-lg ring-1 ring-violet-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-violet-600">Upcoming</p>
+              <p className="mt-2 text-3xl font-bold text-violet-900">{summary.upcoming}</p>
+            </div>
+            <div className="p-3 bg-violet-200 rounded-lg"><TrendingUp className="text-violet-600" size={24} /></div>
+          </div>
         </div>
       </div>
 
