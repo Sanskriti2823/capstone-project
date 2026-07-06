@@ -16,7 +16,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-slate-100 text-slate-900">
+      <div className="min-h-screen text-slate-900">
         <NavBar />
         <Routes>
           <Route path="/" element={token ? <Navigate to="/dashboard" /> : <Home />} />

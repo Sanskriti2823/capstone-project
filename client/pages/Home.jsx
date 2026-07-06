@@ -1,45 +1,94 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Camera, CreditCard, Cloud, BarChart3, Users, Zap, CheckCircle, Star, ArrowRight } from "lucide-react";
+import { Camera, CreditCard, Cloud, BarChart3, Users, Zap, CheckCircle, Star, ArrowRight, Sparkles, Shield, TrendingUp, Clock, Award, Headphones, Repeat2, Lock } from "lucide-react";
+import { useState } from "react";
 
 export default function Home() {
   const navigate = useNavigate();
+  const [expandedFaq, setExpandedFaq] = useState(null);
+
+  const stats = [
+    { label: "Active Studios", value: "500+", icon: Camera },
+    { label: "Bookings Processed", value: "50K+", icon: CheckCircle },
+    { label: "Revenue Managed", value: "$5M+", icon: TrendingUp },
+    { label: "Uptime", value: "99.9%", icon: Award },
+  ];
 
   const features = [
     {
       icon: Camera,
-      title: "Professional Bookings",
-      desc: "Easy-to-use booking system for photographers and studios",
+      title: "Smart Booking System",
+      desc: "AI-powered scheduling that learns from your patterns and optimizes availability",
       color: "from-sky-500 to-cyan-500",
+      highlight: true,
     },
     {
       icon: CreditCard,
       title: "Secure Payments",
-      desc: "Stripe integration for safe and quick payment processing",
+      desc: "Stripe integration with PCI compliance, multi-currency support & instant payouts",
       color: "from-emerald-500 to-teal-500",
+      highlight: true,
     },
     {
       icon: Cloud,
       title: "Cloud Storage",
-      desc: "Cloudinary-powered image uploads and management",
+      desc: "Unlimited Cloudinary-powered image uploads with AI-powered organization",
       color: "from-violet-500 to-purple-500",
+      highlight: false,
     },
     {
       icon: BarChart3,
-      title: "Admin Dashboard",
-      desc: "Real-time analytics and booking management tools",
+      title: "Analytics Dashboard",
+      desc: "Real-time insights with predictive analytics and custom report generation",
       color: "from-orange-500 to-rose-500",
+      highlight: true,
     },
     {
       icon: Users,
-      title: "Client Management",
-      desc: "Organize and track all your studio clients",
+      title: "Client Portal",
+      desc: "Branded client portal with booking history, invoice management & reviews",
       color: "from-pink-500 to-red-500",
+      highlight: false,
     },
     {
       icon: Zap,
       title: "AI Assistant",
-      desc: "Smart recommendations and instant support for your studio",
+      desc: "24/7 intelligent support, client communication automation & smart recommendations",
       color: "from-yellow-500 to-amber-500",
+      highlight: true,
+    },
+  ];
+
+  const integrations = [
+    { name: "Stripe", desc: "Payment processing", icon: "💳" },
+    { name: "Cloudinary", desc: "Image management", icon: "☁️" },
+    { name: "MongoDB", desc: "Data storage", icon: "🗄️" },
+    { name: "JWT Auth", desc: "Security", icon: "🔐" },
+  ];
+
+  const faqItems = [
+    {
+      question: "How long does it take to set up my studio?",
+      answer: "Most studios are up and running within 5 minutes. We provide step-by-step guides and dedicated support to get you started quickly."
+    },
+    {
+      question: "Can I import existing client data?",
+      answer: "Yes! We support bulk imports from CSV files and other platforms. Our team can help migrate your data at no extra cost."
+    },
+    {
+      question: "What payment methods do you accept?",
+      answer: "We support all major payment methods through Stripe: credit cards, debit cards, Apple Pay, Google Pay, and bank transfers."
+    },
+    {
+      question: "Is my client data secure?",
+      answer: "Absolutely. We use enterprise-grade encryption, regular security audits, GDPR compliance, and automated backups."
+    },
+    {
+      question: "Can I cancel my subscription anytime?",
+      answer: "Yes, you can cancel anytime with no penalties. You'll maintain access until the end of your billing period."
+    },
+    {
+      question: "Do you offer custom integrations?",
+      answer: "Yes! Our Enterprise plan includes API access and custom integrations. Contact our sales team for more details."
     },
   ];
 
@@ -146,12 +195,32 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Stats Section */}
+      <section className="px-4 py-16 sm:px-6 lg:px-8 bg-gradient-to-r from-sky-950/40 to-cyan-950/40 border-y border-slate-800/50">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {stats.map((stat, idx) => {
+              const Icon = stat.icon;
+              return (
+                <div key={idx} className="text-center group">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br from-sky-500/20 to-cyan-500/20 mb-4 group-hover:scale-110 transition">
+                    <Icon size={24} className="text-sky-400" />
+                  </div>
+                  <p className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-sky-300 to-cyan-300 bg-clip-text text-transparent mb-2">{stat.value}</p>
+                  <p className="text-slate-400 text-sm">{stat.label}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section id="features" className="px-4 py-24 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="text-center mb-20">
             <h2 className="text-5xl font-bold mb-4">Powerful Features</h2>
-            <p className="text-xl text-slate-400">Everything you need to run a successful studio</p>
+            <p className="text-xl text-slate-400">Everything you need to run a successful studio with enterprise-grade tools</p>
           </div>
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {features.map((feature, idx) => {
@@ -159,13 +228,24 @@ export default function Home() {
               return (
                 <div
                   key={idx}
-                  className={`group rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-800/30 to-slate-900/30 p-8 backdrop-blur hover:border-slate-700 transition transform hover:scale-105 hover:shadow-xl`}
+                  className={`group rounded-2xl border transition transform hover:scale-105 hover:shadow-2xl duration-300 ${
+                    feature.highlight
+                      ? "border-sky-500/50 bg-gradient-to-br from-sky-900/20 to-cyan-900/20 hover:border-sky-400/80 hover:shadow-sky-500/20"
+                      : "border-slate-800 bg-gradient-to-br from-slate-800/30 to-slate-900/30 hover:border-slate-700 hover:shadow-slate-500/10"
+                  }`}
                 >
-                  <div className={`inline-flex p-3 rounded-lg bg-gradient-to-r ${feature.color} bg-opacity-10 mb-4`}>
-                    <Icon className="h-6 w-6 text-white" />
+                  {feature.highlight && (
+                    <div className="absolute top-4 right-4 bg-sky-500/20 rounded-full p-1 text-sky-400">
+                      <Sparkles size={16} />
+                    </div>
+                  )}
+                  <div className="p-8">
+                    <div className={`inline-flex p-3 rounded-lg bg-gradient-to-r ${feature.color} bg-opacity-10 mb-4 group-hover:scale-110 transition`}>
+                      <Icon className="h-6 w-6 text-white" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-white mb-2">{feature.title}</h3>
+                    <p className="text-slate-400">{feature.desc}</p>
                   </div>
-                  <h3 className="text-xl font-semibold text-white mb-2">{feature.title}</h3>
-                  <p className="text-slate-400">{feature.desc}</p>
                 </div>
               );
             })}
@@ -201,22 +281,46 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Integrations Section */}
+      <section className="px-4 py-24 sm:px-6 lg:px-8 bg-gradient-to-r from-slate-800/20 to-slate-900/20">
+        <div className="mx-auto max-w-7xl">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-4">Seamless Integrations</h2>
+            <p className="text-slate-400">Works perfectly with your favorite tools</p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {integrations.map((integration, idx) => (
+              <div key={idx} className="rounded-xl border border-slate-800 bg-slate-800/20 p-6 text-center hover:border-sky-500/50 hover:bg-slate-800/40 transition transform hover:scale-105">
+                <div className="text-4xl mb-3">{integration.icon}</div>
+                <h3 className="font-semibold text-white mb-1">{integration.name}</h3>
+                <p className="text-sm text-slate-400">{integration.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Testimonials */}
       <section className="px-4 py-24 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <h2 className="text-5xl font-bold text-center mb-20">Loved by Studios</h2>
+          <h2 className="text-5xl font-bold text-center mb-20">Loved by Studios Worldwide</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, idx) => (
-              <div key={idx} className="rounded-2xl border border-slate-800 bg-slate-800/30 p-8 backdrop-blur">
+              <div key={idx} className="group rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-800/30 to-slate-900/30 p-8 hover:border-sky-500/30 hover:bg-slate-800/40 transition transform hover:scale-105 hover:shadow-xl">
                 <div className="flex gap-1 mb-4">
                   {[...Array(testimonial.rating)].map((_, i) => (
                     <Star key={i} size={18} className="fill-yellow-400 text-yellow-400" />
                   ))}
                 </div>
-                <p className="text-slate-300 mb-6">"{testimonial.text}"</p>
-                <div>
-                  <p className="font-semibold text-white">{testimonial.name}</p>
-                  <p className="text-sm text-slate-400">{testimonial.title}</p>
+                <p className="text-slate-300 mb-6 italic">"{testimonial.text}"</p>
+                <div className="flex items-center gap-3 pt-4 border-t border-slate-700">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-sky-500 to-cyan-500 flex items-center justify-center text-white font-bold">
+                    {testimonial.name.charAt(0)}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-white text-sm">{testimonial.name}</p>
+                    <p className="text-xs text-slate-400">{testimonial.title}</p>
+                  </div>
                 </div>
               </div>
             ))}
@@ -224,48 +328,124 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section className="px-4 py-24 sm:px-6 lg:px-8 bg-gradient-to-r from-slate-800/30 to-slate-900/30">
+      {/* FAQ Section */}
+      <section className="px-4 py-24 sm:px-6 lg:px-8 bg-gradient-to-r from-slate-800/20 to-slate-900/20">
+        <div className="mx-auto max-w-3xl">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-4">Frequently Asked Questions</h2>
+            <p className="text-slate-400">Everything you need to know about StudioPro</p>
+          </div>
+          <div className="space-y-4">
+            {faqItems.map((item, idx) => (
+              <div key={idx} className="rounded-xl border border-slate-800 overflow-hidden hover:border-sky-500/30 transition">
+                <button
+                  onClick={() => setExpandedFaq(expandedFaq === idx ? null : idx)}
+                  className="w-full px-6 py-4 bg-slate-800/30 hover:bg-slate-800/50 transition flex items-center justify-between"
+                >
+                  <span className="font-semibold text-left">{item.question}</span>
+                  <span className={`text-sky-400 transition transform ${expandedFaq === idx ? "rotate-180" : ""}`}>
+                    ▼
+                  </span>
+                </button>
+                {expandedFaq === idx && (
+                  <div className="px-6 py-4 bg-slate-900/30 border-t border-slate-800 text-slate-300">
+                    {item.answer}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Trust Section */}
+      <section className="px-4 py-24 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-800/20 to-slate-900/20 p-12">
+            <div className="grid md:grid-cols-4 gap-8">
+              <div className="text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 mb-4">
+                  <Lock size={24} className="text-emerald-400" />
+                </div>
+                <h3 className="font-semibold mb-2">Enterprise Security</h3>
+                <p className="text-sm text-slate-400">256-bit SSL encryption & GDPR compliant</p>
+              </div>
+              <div className="text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 mb-4">
+                  <Shield size={24} className="text-blue-400" />
+                </div>
+                <h3 className="font-semibold mb-2">PCI Compliant</h3>
+                <p className="text-sm text-slate-400">Meets payment industry standards</p>
+              </div>
+              <div className="text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 mb-4">
+                  <Award size={24} className="text-purple-400" />
+                </div>
+                <h3 className="font-semibold mb-2">99.9% Uptime</h3>
+                <p className="text-sm text-slate-400">SLA-backed reliability guarantee</p>
+              </div>
+              <div className="text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-orange-500/20 mb-4">
+                  <Repeat2 size={24} className="text-orange-400" />
+                </div>
+                <h3 className="font-semibold mb-2">Daily Backups</h3>
+                <p className="text-sm text-slate-400">Automatic data protection</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section className="px-4 py-24 sm:px-6 lg:px-8 bg-gradient-to-r from-slate-800/20 to-slate-900/20">
         <div className="mx-auto max-w-7xl">
           <h2 className="text-5xl font-bold text-center mb-4">Simple, Transparent Pricing</h2>
-          <p className="text-center text-slate-400 mb-20 text-lg">Choose the perfect plan for your studio</p>
+          <p className="text-center text-slate-400 mb-20 text-lg">Choose the perfect plan for your studio • No hidden fees</p>
           <div className="grid md:grid-cols-3 gap-8">
             {pricing.map((plan, idx) => (
               <div
                 key={idx}
-                className={`rounded-2xl transition transform ${
+                className={`rounded-2xl transition transform hover:scale-105 duration-300 ${
                   plan.highlight
-                    ? "border-2 border-sky-500 bg-gradient-to-br from-sky-950/50 to-slate-900/50 scale-105 shadow-2xl shadow-sky-500/20"
-                    : "border border-slate-800 bg-slate-800/30"
-                } p-8 backdrop-blur`}
+                    ? "border-2 border-sky-500 bg-gradient-to-br from-sky-950/50 to-slate-900/50 shadow-2xl shadow-sky-500/30 ring-1 ring-sky-500/20"
+                    : "border border-slate-800 bg-gradient-to-br from-slate-800/30 to-slate-900/30 hover:border-slate-700"
+                } p-8 backdrop-blur relative`}
               >
-                {plan.highlight && <div className="text-center text-sm font-semibold text-sky-400 mb-4 bg-sky-500/10 rounded-full py-1 px-3 inline-block">MOST POPULAR</div>}
-                <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                <div className="mb-6">
-                  <span className="text-4xl font-bold">{plan.price}</span>
-                  <span className="text-slate-400 ml-2">{plan.period}</span>
+                {plan.highlight && (
+                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                    <div className="bg-gradient-to-r from-sky-500 to-cyan-500 text-white text-xs font-bold px-4 py-2 rounded-full whitespace-nowrap">
+                      ⭐ MOST POPULAR
+                    </div>
+                  </div>
+                )}
+                <div className="mb-8">
+                  <h3 className="text-2xl font-bold mb-4">{plan.name}</h3>
+                  <div className="mb-6">
+                    <span className="text-5xl font-bold bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent">{plan.price}</span>
+                    <span className="text-slate-400 ml-2 text-lg">{plan.period}</span>
+                  </div>
+                  <p className="text-slate-400 text-sm mb-6">Perfect for {plan.name === 'Starter' ? 'freelance photographers' : plan.name === 'Professional' ? 'growing studios' : 'enterprise studios'}</p>
                 </div>
                 <button
                   onClick={() => navigate("/register")}
-                  className={`w-full rounded-lg py-3 font-semibold transition mb-8 ${
+                  className={`w-full rounded-lg py-3 font-semibold transition mb-8 transform hover:scale-105 ${
                     plan.highlight
-                      ? "bg-gradient-to-r from-sky-500 to-cyan-500 text-white hover:from-sky-600 hover:to-cyan-600"
-                      : "border border-slate-600 text-slate-300 hover:bg-slate-800/50"
+                      ? "bg-gradient-to-r from-sky-500 to-cyan-500 text-white hover:from-sky-600 hover:to-cyan-600 shadow-lg shadow-sky-500/30"
+                      : "border border-slate-600 text-slate-300 hover:bg-slate-800/50 hover:border-slate-500"
                   }`}
                 >
                   {plan.cta}
                 </button>
                 <ul className="space-y-3">
                   {plan.features.map((feature, i) => (
-                    <li key={i} className="flex items-center gap-3 text-slate-300">
+                    <li key={i} className="flex items-center gap-3 text-slate-300 text-sm">
                       <CheckCircle size={16} className="text-emerald-500 flex-shrink-0" />
-                      {feature}
+                      <span>{feature}</span>
                     </li>
                   ))}
                 </ul>
               </div>
             ))}
           </div>
+          <p className="text-center text-slate-400 mt-16 text-sm">All plans include 14-day free trial • No credit card required</p>
         </div>
       </section>
 
