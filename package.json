@@ -1,0 +1,14 @@
+{
+  "name": "studio-management-system",
+  "version": "1.0.0",
+  "description": "Full-stack studio management platform",
+  "private": true,
+  "scripts": {
+    "build": "cd client && npm install && npm run build",
+    "postbuild": "echo 'Build completed'",
+    "start": "cd client && npm start"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}
