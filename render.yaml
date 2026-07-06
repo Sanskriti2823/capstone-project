@@ -13,7 +13,7 @@ services:
       - key: PORT
         value: "10000"
       - key: CLIENT_URL
-        value: "https://your-frontend-url.example"
+        value: https://studio-management-frontend.onrender.com
       - key: JWT_SECRET
         fromSecret: JWT_SECRET
       - key: MONGO_URI
@@ -45,4 +45,4 @@ services:
       - key: PORT
         value: "3000"
       - key: VITE_API_URL
-        value: "https://your-backend-url.example/api"
+        value: https://studio-management-backend.onrender.com/api

@@ -86,6 +86,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/api/payments/webhook", express.raw({ type: "application/json" }));
 
+// API routes
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/ai", require("./routes/aiRoutes"));
 app.use("/api/bookings", require("./routes/bookingRoutes"));
@@ -93,10 +94,21 @@ app.use("/api/uploads", require("./routes/imageRoutes"));
 app.use("/api/payments", require("./routes/paymentRoutes"));
 app.use("/api/admin", require("./routes/adminRoutes"));
 
+// Health check endpoint
+app.get("/health", (req, res) => {
+  res.json({ status: "Server is running" });
+});
+
+// Serve static files in production
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../client/dist")));
 
+  // SPA fallback - serve index.html for all non-API routes
   app.get("*", (req, res) => {
+    // Don't serve index.html for API routes
+    if (req.path.startsWith("/api")) {
+      return res.status(404).json({ error: "API endpoint not found" });
+    }
     res.sendFile(path.join(__dirname, "../client/dist/index.html"));
   });
 }
